@@ -57,7 +57,7 @@ async def generate_completion_response(
         rendered = prompt.render()
         print(rendered)
         #response = openai.Completion.create(
-            #model="text-davinci-003",
+            #model="gpt-4",
             #message=rendered,
             #temperature=1.0,
             #top_p=0.9,
