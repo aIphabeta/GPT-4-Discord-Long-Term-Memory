@@ -1,4 +1,4 @@
-Minor updates planned to enable GPT-4 8k chat (not completion)
+GPT-4 support added. Added pycord support. soon to add functions.
 
 ---
 
