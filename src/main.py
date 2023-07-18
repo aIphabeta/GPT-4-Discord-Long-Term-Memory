@@ -49,7 +49,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
-tree = discord.app_commands.CommandTree(client)
+#tree = discord.app_commands.CommandTree(client)
 
 
 @client.event
@@ -65,54 +65,54 @@ async def on_ready():
             else:
                 messages.append(m)
         completion.MY_BOT_EXAMPLE_CONVOS.append(Conversation(messages=messages))
-    await tree.sync()
+    #await tree.sync()
 
 
 # /chat message:
-@tree.command(name="chat", description="Talk to the bot")
-@discord.app_commands.checks.has_permissions(send_messages=True)
-@discord.app_commands.checks.has_permissions(view_channel=True)
-@discord.app_commands.checks.bot_has_permissions(send_messages=True)
-@discord.app_commands.checks.bot_has_permissions(view_channel=True)
-@discord.app_commands.checks.bot_has_permissions(manage_threads=True)
-async def chat_command(int: discord.Interaction, message: str, channel: discord.TextChannel):
-    try:
-        # block servers not in allow list
-        if should_block(guild=int.guild):
-            return
+#@tree.command(name="chat", description="Talk to the bot")
+#@discord.app_commands.checks.has_permissions(send_messages=True)
+#@discord.app_commands.checks.has_permissions(view_channel=True)
+#@discord.app_commands.checks.bot_has_permissions(send_messages=True)
+#@discord.app_commands.checks.bot_has_permissions(view_channel=True)
+#@discord.app_commands.checks.bot_has_permissions(manage_threads=True)
+#async def chat_command(int: discord.Interaction, message: str, channel: discord.TextChannel):
+#    try:
+#        # block servers not in allow list
+#        if should_block(guild=int.guild):
+#            return##
 
-        user = int.user
-        logger.info(f"Chat command by {user} {message[:20]}")
-        try:
-            embed = discord.Embed(
-                description=f"<@{user.id}> wants to chat! 🤖💬",
-                color=discord.Color.green(),
-            )
-            embed.add_field(name=user.name, value=message)
-            await int.response.send_message(embed=embed)
-            response = await int.original_response()
-        except Exception as e:
-            logger.exception(e)
-            await int.response.send_message(
-                f"Failed to start chat {str(e)}", ephemeral=True
-            )
-            return
+#        user = int.user
+#        logger.info(f"Chat command by {user} {message[:20]}")
+#        try:
+#            embed = discord.Embed(
+#                description=f"<@{user.id}> wants to chat! 🤖💬",
+#                color=discord.Color.green(),
+#            )
+#            embed.add_field(name=user.name, value=message)
+#            await int.response.send_message(embed=embed)
+#            response = await int.original_response()
+#        except Exception as e:
+#            logger.exception(e)
+#            await int.response.send_message(
+#                f"Failed to start chat {str(e)}", ephemeral=True
+#            )
+#            return#
 
-        async with channel.typing():
-            # fetch completion
-            messages = [Message(user=user.name, text=message)]
-            response_data = await generate_completion_response(
-                messages=messages, user=user
-            )
-            # send the result
-            await process_response(
-                user=user, channel=channel, response_data=response_data
-            )
-    except Exception as e:
-        logger.exception(e)
-        await int.response.send_message(
-            f"Failed to start chat {str(e)}", ephemeral=True
-        )
+#        async with channel.typing():
+#            # fetch completion
+#            messages = [Message(user=user.name, text=message)]
+#            response_data = await generate_completion_response(
+#                messages=messages, user=user
+#            )
+#            # send the result
+#            await process_response(
+#                user=user, channel=channel, response_data=response_data
+#            )
+#    except Exception as e:
+#        logger.exception(e)
+#        await int.response.send_message(
+#            f"Failed to start chat {str(e)}", ephemeral=True
+#        )
         
 
 # calls for each message
@@ -132,7 +132,7 @@ async def on_message(message: DiscordMessage):
         vector = gpt3_embedding(message)
         timestamp = time()
         timestring = timestring = timestamp_to_datetime(timestamp)
-        user = message.author.name
+        user = message.author.display_name
         extracted_message = '%s: %s - %s' % (user, timestring, message.content)
         info = {'speaker': user, 'timestamp': timestamp,'uuid': str(uuid4()), 'vector': vector, 'message': extracted_message, 'timestring': timestring}
         filename = 'log_%s_user' % timestamp
