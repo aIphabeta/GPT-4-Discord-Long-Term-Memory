@@ -1,4 +1,4 @@
-GPT-4 support added. Added pycord support. soon to add functions.
+GPT-4 support added. Added pycord support. soon to add functions. I'll eventually add numpy vector memory to GPT-Voice project
 
 ---
 
