@@ -1,6 +1,9 @@
 from enum import Enum
 from dataclasses import dataclass
 import openai
+from openai import OpenAI
+
+client = OpenAI()
 import json
 from typing import Optional, List
 from src.constants import (
@@ -13,7 +16,7 @@ from src.base import Message, Prompt, Conversation
 from src.utils import split_into_shorter_messages, logger
 from datetime import datetime
 from src.memory import (
-    gpt3_response_embedding, 
+    gpt3_response_embedding,
     save_json,
     timestamp_to_datetime
     )
@@ -53,31 +56,30 @@ async def generate_completion_response(
             examples=MY_BOT_EXAMPLE_CONVOS,
             convo=Conversation(messages + [Message(f"{timestring} {MY_BOT_NAME}")]),
         )
-        
+
         rendered = prompt.render()
         print(rendered)
         #response = openai.Completion.create(
-            #model="gpt-3.5-turbo",
+            #model="text-davinci-003",
             #message=rendered,
             #temperature=1.0,
             #top_p=0.9,
             #max_tokens=512,
             #stop=["<|endoftext|>"],
-            
-         # You can rollback to using gpt-3.5-turbo by swapping the active "response ="
 
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": rendered}])
+         # You can rollback to using text-davincini-003 by swapping the active "response =" and "reply ="
 
-        ##reply = response.choices[0].text.strip()
-        
-        reply = response.choices[0].message['content'].strip()
+        response = client.chat.completions.create(model="gpt-4-1106-preview",
+        messages=[{"role": "system", "content": rendered}])
+
+        #reply = response.choices[0].text.strip()
+
+        reply = response.choices[0].message.content.strip()
 
         return CompletionData(
             status=CompletionResult.OK, reply_text=reply, status_text=None
         )
-    except openai.error.InvalidRequestError as e:
+    except client.InvalidRequestError as e:
         if "This model's maximum context length" in e.user_message:
             return CompletionData(
                 status=CompletionResult.TOO_LONG, reply_text=None, status_text=str(e)
