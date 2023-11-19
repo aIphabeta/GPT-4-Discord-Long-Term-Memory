@@ -1,5 +1,7 @@
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 import json
 import numpy as np
 from numpy.linalg import norm
@@ -36,22 +38,22 @@ def timestamp_to_datetime(unix_time):
     return datetime.fromtimestamp(unix_time).strftime("%A, %B %d, %Y at %I:%M%p %Z")
 
 
-def gpt3_embedding(message, engine='text-embedding-ada-002'):
+def gpt3_embedding(message, model='text-embedding-ada-002'):
     content = message.content
-    response = openai.Embedding.create(input=content,engine=engine)
-    vector = response['data'][0]['embedding']  # this is a normal list
+    response = client.embeddings.create(input=content,model=model)
+    vector = response.data[0].embedding  # this is a normal list
     return vector
 
-def gpt3_response_embedding(response_data, engine='text-embedding-ada-002'):
+def gpt3_response_embedding(response_data, model='text-embedding-ada-002'):
     content = response_data.reply_text
-    response = openai.Embedding.create(input=content,engine=engine)
-    vector = response['data'][0]['embedding']  # this is a normal list
+    response = client.embeddings.create(input=content,model=model)
+    vector = response.data[0].embedding  # this is a normal list
     return vector
 
-def gpt3_memory_embedding(content, engine='text-embedding-ada-002'):
+def gpt3_memory_embedding(content, model='text-embedding-ada-002'):
     content = content.encode(encoding='ASCII',errors='ignore').decode()
-    response = openai.Embedding.create(input=content,engine=engine)
-    vector = response['data'][0]['embedding']  # this is a normal list
+    response = client.embeddings.create(input=content,model=model)
+    vector = response.data[0].embedding  # this is a normal list
     return vector
 
 
@@ -111,17 +113,16 @@ def load_memory():
         result.append(data)
     return result
 
-def gpt3_completion(prompt, engine='gpt-3.5-turbo', temp=0.0, top_p=1.0, tokens=600, freq_pen=0.0, pres_pen=0.0, stop=['USER:', 'Jarvis:']):
+def gpt3_completion(prompt, model='gpt-3.5-turbo', temp=0.0, top_p=1.0, tokens=600, freq_pen=0.0, pres_pen=0.0, stop=['USER:', 'Jarvis:']):
     max_retry = 5
     retry = 0
     prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
     while True:
         try:
-            response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            response = client.chat.completions.create(model="gpt-4-1106-preview", #gpt-3.5-turbo",
             messages=[{"role": "system", "content": prompt}])
-                
-            text = response.choices[0].message['content'].strip()
+
+            text = response.choices[0].message.content.strip()
             text = re.sub('[\r\n]+', '\n', text)
             text = re.sub('[\t ]+', ' ', text)
             filename = '%s_gpt3.txt' % time()
