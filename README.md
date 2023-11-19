@@ -1,4 +1,4 @@
-GPT-4 support added. Added pycord support. soon to add functions. I'll eventually add numpy vector memory to GPT-Voice project
+Updated openai import syntax. GPT-4 1106 added. Added pycord support. soon to add functions. I'll eventually add numpy vector memory to GPT-Voice project
 
 ---
 
